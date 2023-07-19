@@ -1,0 +1,50 @@
+--create table using spotify data from kaggle--
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+);
+
+-- get an idea for what data is stored--
+select * from spotifydata
+ limit 10;
+ 
+--find avg popularity, daceability, and energy by artist and track--
+SELECT artist_name, track_name, avg(popularity), avg(danceability), avg(energy)
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name, track_name;
+
+--top 10 artist by popularity--
+SELECT track_name, artist_name, popularity
+FROM BIT_DB.Spotifydata
+ORDER BY popularity DESC LIMIT 10;
+
+--Find total duration of songs for each artist by minutes--
+SELECT SUM(duration_ms)/60000, artist_name
+FROM BIT_DB.Spotifydata
+GROUP BY artist_name
+ORDER BY duration_ms;
+
+--create temp table and find artist with average popularity of 90 or above and tag as Top Star--
+WITH popularity_avg_CTE AS (SELECT s.artist_name, avg(s.popularity) AS average_popularity
+FROM Spotifydata s
+GROUP BY s.artist_name)
+
+SELECT artist_name, average_popularity, 'Top Star' AS tag
+FROM popularity_avg_CTE
+WHERE average_popularity>=90; 
